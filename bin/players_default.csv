@@ -1,1 +1,2 @@
-name,species,level,gold,baseHealth,currentHealth,baseSpeed,currentSpeed,location,armor,weapon,status
+name,species,level,exp,gold,baseHealth,currentHealth,baseSpeed,currentSpeed,location,armor,weapon,status
+# If you change these ^ don't forget to change saving && loading!!
