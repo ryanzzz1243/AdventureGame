@@ -26,7 +26,7 @@ def mainMenu():
         else:
             print("Error creating game! Going back to main menu...")
             game.player = None
-            mainMenu()      
+            mainMenu()
     elif(choice == 2):
         game.loadPlayer()
         if(game.player):

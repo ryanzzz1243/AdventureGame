@@ -251,6 +251,9 @@ class AdventureGame:
             print("Creation cancelled!")
             return None
         print(f"Your new {self.player.armor.name} will serve you well, provided you don't overdo it.")
+        self.player.updateLevel()
+        self.player.updateGenerator()
+        self.player.updateSpeed()
 
     def loadPlayer(self):
         clear()
