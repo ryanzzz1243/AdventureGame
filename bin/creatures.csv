@@ -1,0 +1,4 @@
+name,species,baseHealth,baseSpeed,armor,weapon,friendly
+Evil Bat,bat,6,15,None,Fangs,no
+Ogre,ogre,10,5,Thick Skin,Big Club,no
+Demon,demon,5,10,None,Demon Club,no

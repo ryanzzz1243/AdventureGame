@@ -1,0 +1,11 @@
+name,type,range,damageRange,damageType,starter,player
+Short Sword,melee,2,3|6,physical,yes,yes
+Small Bow,ranged,25,2|5,physical,yes,yes
+Compound Bow,ranged,35,5|7,physical,no,yes
+Long Sword,melee,3,3|7,physical,no,yes
+Magic Wand,ranged,20,4|5,magic,no,yes
+Crossbow,ranged,50,3|5,physical,no,yes
+Dual Daggers,melee,1,4|5,physical,no,yes
+Fangs,melee,1,1|3,physical,no,no
+Big Club,melee,3,2|4,physical,no,no
+Demon Club,melee,1,1|4,physical,no,no
