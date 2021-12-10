@@ -142,25 +142,25 @@ class AdventureGame:
 
         # Start loading resources    
         with open(FILE_LOCATIONS, 'r') as f:
-            aspects = f.readline().strip("\n").split(CSV_DELIM)
+            aspects = f.readline().strip(",\n").split(CSV_DELIM)
             for line in f:
                 newLocation = Location(line, aspects)
                 self.LOCATIONS.append(newLocation)
 
         with open(FILE_ARMORS, 'r') as f:
-            aspects = f.readline().strip("\n").split(CSV_DELIM)
+            aspects = f.readline().strip(",\n").split(CSV_DELIM)
             for line in f:
                 newArmor = Armor(line, aspects)
                 self.ARMORS.append(newArmor)
 
         with open(FILE_WEAPONS, 'r') as f:
-            aspects = f.readline().strip("\n").split(CSV_DELIM)
+            aspects = f.readline().strip(",\n").split(CSV_DELIM)
             for line in f:
                 newWeapon = Weapon(line, aspects)
                 self.WEAPONS.append(newWeapon)
 
         with open(FILE_CREATURES, 'r') as f:
-            aspects = f.readline().strip("\n").split(CSV_DELIM)
+            aspects = f.readline().strip(",\n").split(CSV_DELIM)
             for line in f:
                 newCreature = Creature(line, aspects)
                 armor = newCreature.armor
@@ -178,11 +178,11 @@ class AdventureGame:
             with open(FILE_PLAYERS, 'x') as f:
                 f.writelines(defaultPlayerLines)
         with open(FILE_PLAYERS, 'r') as f:
-            aspects = f.readline().strip("\n").split(CSV_DELIM)
+            aspects = f.readline().strip(",\n").split(CSV_DELIM)
             for line in f:
-                if line.strip("\n").split(CSV_DELIM)[0][0] == '#': # Comments
+                if line.strip(",\n").split(CSV_DELIM)[0][0] == '#': # Comments
                     continue
-                if(len(line.strip("\n").split(CSV_DELIM)) == len(aspects)+1):
+                if(len(line.strip(",\n").split(CSV_DELIM)) == len(aspects)):
                     newPlayer = Player()
                     newPlayer.loadFromLine(line, aspects)
                     loc = newPlayer.location
@@ -535,8 +535,8 @@ class Player:
 
     def loadFromLine(self, line: str, aspects: str) -> None:
         '''Load player from a line in FILE_PLAYERS'''
-        lline = line.strip("\n").split(CSV_DELIM)
-        genDict = {aspects[i]: lline[i] for i, aspect in enumerate(aspects)}
+        lline = line.strip(",\n").split(CSV_DELIM)
+        genDict = {aspects[i]: lline[i] for i in range(len(aspects))}
         try:
             self.generator = genDict
             self.new = False
@@ -596,8 +596,8 @@ class Player:
 
 class Creature:
     def __init__(self, line: str, aspects: str):
-        lline = line.strip("\n").split(CSV_DELIM)
-        genDict = {aspects[i]: lline[i] for i, aspect in enumerate(aspects)}
+        lline = line.strip(",\n").split(CSV_DELIM)
+        genDict = {aspects[i]: lline[i] for i in range(len(aspects))}
         try:
             self.generator = genDict
             self.name = genDict['name']
@@ -613,8 +613,8 @@ class Creature:
 
 class Location:
     def __init__(self, line: str, aspects: str):
-        lline = line.strip("\n").split(CSV_DELIM)
-        genDict = {aspects[i]: lline[i] for i, aspect in enumerate(aspects)}
+        lline = line.strip(",\n").split(CSV_DELIM)
+        genDict = {aspects[i]: lline[i] for i in range(len(aspects))}
         try:
             self.generator = genDict
             self.name = genDict['name']
@@ -629,8 +629,8 @@ class Location:
 
 class Armor:
     def __init__(self, line: str, aspects: str):
-        lline = line.strip("\n").split(CSV_DELIM)
-        genDict = {aspects[i]: lline[i] for i, aspect in enumerate(aspects)}
+        lline = line.strip(",\n").split(CSV_DELIM)
+        genDict = {aspects[i]: lline[i] for i in range(len(aspects))}
         try:
             self.generator = genDict
             self.name = genDict['name']
@@ -646,7 +646,7 @@ class Armor:
 class Weapon:
     def __init__(self, line: str, aspects: str):
         lline = line.strip("\n").split(CSV_DELIM)
-        genDict = {aspects[i]: lline[i] for i, aspect in enumerate(aspects)}
+        genDict = {aspects[i]: lline[i] for i in range(len(aspects))}
         try:
             self.generator = genDict
             self.name = genDict['name']
