@@ -1,4 +1,4 @@
-name,species,level,exp,gold,baseHealth,currentHealth,baseSpeed,currentSpeed,location,armor,weapon,status
+name,species,level,exp,gold,baseHealth,currentHealth,baseSpeed,currentSpeed,location,armor,weapon,status,
 # If you change these ^ don't forget to change saving && loading!!
-Ryan,Human,1,0,5,15,15,30,30,Wolfshore,Light Chainmail,Short Sword,0,
+Ryan,Human,1,0,5,15,15,30,27,Wolfshore,Light Chainmail,Short Sword,0,
 Picard,Robot,3,53,61,17,15,30,27,Darkcrest,Light Chainmail,Small Bow,0,
