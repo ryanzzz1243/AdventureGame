@@ -26,6 +26,12 @@ FILE_ARMORS = "bin/armors.csv"
 FILE_WEAPONS = "bin/weapons.csv"
 FILE_CREATURES = "bin/creatures.csv"
 FILE_PLAYERS = "bin/players.csv"
+FILE_DEFAULT_PLAYERS = "bin/players_default.csv"
+
+def getDefaultGenerator() -> dict:
+    with open(FILE_DEFAULT_PLAYERS, 'r') as f:
+        aspects = f.readline().strip("\n").split(CSV_DELIM)
+    return {key: None for key in aspects}
 
 # getMenu is reused from my previous submissions
 def getMenu(*args: str):
@@ -166,6 +172,11 @@ class AdventureGame:
         self.loadPlayers()
     
     def loadPlayers(self):
+        if not exists(FILE_PLAYERS):
+            with open(FILE_DEFAULT_PLAYERS, 'r') as f:
+                defaultPlayerLines = f.readlines()
+            with open(FILE_PLAYERS, 'x') as f:
+                f.writelines(defaultPlayerLines)
         with open(FILE_PLAYERS, 'r') as f:
             aspects = f.readline().strip("\n").split(CSV_DELIM)
             for line in f:
@@ -251,8 +262,8 @@ class AdventureGame:
             print("Creation cancelled!")
             return None
         print(f"Your new {self.player.armor.name} will serve you well, provided you don't overdo it.")
+        self.player.generator = getDefaultGenerator()
         self.player.updateLevel()
-        self.player.updateGenerator()
         self.player.updateSpeed()
 
     def loadPlayer(self):
