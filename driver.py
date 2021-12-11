@@ -18,9 +18,9 @@ def mainMenu():
     if(choice == 1):
         try:
             game.getNewPlayer()
-        except AttributeError:
+        except(AttributeError):
             game.player = None
-        if(game.player):
+        if game.player:
             print("Game created successfully!")
             time.sleep(2)
             clear()

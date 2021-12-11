@@ -66,23 +66,27 @@ def getMenu(*args: str):
 def getUnusedPlayerName(players: list) -> str:
         '''Check name and return if valid.'''
         name = getValidUserString("What is your name? : ")
-        for player in players:
-            if name == player.name:
-                print(f"{name} is already in use! Specify a unique name.")
-                return getUnusedPlayerName(players)
-        return name
+        if name:
+            for player in players:
+                if name == player.name:
+                    print(f"{name} is already in use! Specify a unique name.")
+                    return getUnusedPlayerName(players)
+            return name
+        else:
+            return None
 
 def getUsedPlayerName(players: list):
         '''Check name and return if valid.'''
         name = getValidUserString("What is your name? : ")
-        if type(name) is None:
+        if name:
+            for player in players:
+                if name == player.name:
+                    print(f"{name} found!")
+                    return name
+            print("Name not found. Specify a name that has been used.")
+            return getUsedPlayerName(players)
+        else:
             return None
-        for player in players:
-            if name == player.name:
-                print(f"{name} found!")
-                return name
-        print("Name not found. Specify a name that has been used.")
-        return getUsedPlayerName(players)
 
 def getValidUserString(prompt: str) -> str:
     '''Return user string without invalid characters.'''
@@ -199,24 +203,24 @@ class AdventureGame:
     def getNewPlayer(self, ignorePlayerOverwrite: bool = False):
         clear()
         print("--- New Player Creation ---")
-        self.player = Player()
+        newPlayer = Player()
         if(ignorePlayerOverwrite):
-            self.player.name = getValidUserString("What is your name? : ").strip()
+            newPlayer.name = getValidUserString("What is your name? : ").strip()
         else:
-            self.player.name = getUnusedPlayerName(self.PLAYERS).strip()
-        self.player.species = getValidUserString("What species are you? : ").strip()
+            newPlayer.name = getUnusedPlayerName(self.PLAYERS).strip()
+        newPlayer.species = getValidUserString("What species are you? : ").strip()
 
         # Starter choice.
         print("Would you rather have... ")
         choice = getMenu("More starting health", "More starting speed", "More starting gold")
-        if(choice == 1):
-            self.player.baseHealth = 15
-            self.player.currentHealth = 15
-        elif(choice == 2):
-            self.player.baseSpeed = 45
-            self.player.currentSpeed = 45
-        elif(choice == 3):
-            self.player.gold = 20
+        if choice == 1:
+            newPlayer.baseHealth = 15
+            newPlayer.currentHealth = 15
+        elif choice == 2:
+            newPlayer.baseSpeed = 45
+            newPlayer.currentSpeed = 45
+        elif choice == 3:
+            newPlayer.gold = 20
         else:
             clear()
             print("Creation cancelled!")
@@ -227,53 +231,54 @@ class AdventureGame:
         print("\nWhere would you like to start out?")
         starterLocs = [loc for loc in self.LOCATIONS if loc.starter]
         choice = getMenu(*[f"{loc.name} in the country of {loc.country}" for loc in starterLocs])
-        if(choice):
-            self.player.location = starterLocs[choice-1]
+        if choice:
+            newPlayer.location = starterLocs[choice-1]
         else:
             clear()
             print("Creation cancelled!")
             return None
-        print(f"I knew someone from {self.player.location.name} once. What a {random.choice(ADJECTIVES_GOOD)} place!")
+        print(f"I knew someone from {newPlayer.location.name} once. What a {random.choice(ADJECTIVES_GOOD)} place!")
 
         # Weapon choice.
         print("\nNow, what weapon would you like to start with?")
         starterWeps = [wep for wep in self.WEAPONS if wep.starter]
         choice = getMenu(*[f"{wep.name}, a {wep.type} weapon dealing between {min(list(wep.damage))} and {max(list(wep.damage))} damage." for wep in starterWeps])
-        if(choice):
-            self.player.weapon = starterWeps[choice-1]
+        if choice:
+            newPlayer.weapon = starterWeps[choice-1]
         else:
             clear()
             print("Creation cancelled!")
             return None
-        print(f"The {self.player.weapon.name} is a powerful tool in the hands of a competent warrior.")
+        print(f"The {newPlayer.weapon.name} is a powerful tool in the hands of a competent warrior.")
 
         # Armor choice
         print("\nFinally, you must choose your armor.")
         starterArmor = [armor for armor in self.ARMORS if armor.starter and armor.player]
         choice = getMenu(*[f"{armor.name} which slows you down by {armor.speedPenalty*100:.0f}%, but negates {armor.protection*100:.0f}% of incoming damage." for armor in starterArmor])
-        if(choice):
-            self.player.armor = starterArmor[choice-1]
+        if choice:
+            newPlayer.armor = starterArmor[choice-1]
         else:
             clear()
             print("Creation cancelled!")
             return None
-        print(f"Your new {self.player.armor.name} will serve you well, provided you don't overdo it.")
-        self.player.generator = getDefaultGenerator()
-        self.player.update()
+        print(f"Your new {newPlayer.armor.name} will serve you well, provided you don't overdo it.")
+        newPlayer.generator = getDefaultGenerator()
+        newPlayer.update()
+        self.player = newPlayer
 
     def loadPlayer(self):
         clear()
         if(len(self.PLAYERS) == 0):
             print("No players to load.\n")
             return None
-        playerName = getUsedPlayerName(self.PLAYERS)
-        if playerName:
+        try:
+            playerName = getUsedPlayerName(self.PLAYERS)
             for player in self.PLAYERS:
                 if playerName == player.name:
                     self.player = player
                     self.player.new = False
                     break
-        else:
+        except KeyboardInterrupt:
             self.player = None
 
     def savePlayer(self):
@@ -375,7 +380,9 @@ class AdventureGame:
             elif choice == 4:
                 clear()
                 self.travelMenu()
-                self.idleMenu()    
+                self.idleMenu()
+            else: #IE KeyboardInterrupt
+                pass
 
     def marketMenu(self):
         player = self.player
@@ -401,13 +408,14 @@ class AdventureGame:
             try:
                 choiceWep -= 1
             except TypeError:
-                choiceWep = -1
-            if player.gold >= wepItems[choiceWep].cost:
-                player.weapon = wepItems[choiceWep]
-                player.gold -= player.weapon.cost
-                print(f"Good luck with your new {player.weapon.name}, brave warrior!")
-            elif choiceWep >= 0:
-                print(f"You don't have enough gold for a new {wepItems[choiceWep].name}!")
+                choiceWep = None
+            if choiceWep:
+                if player.gold >= wepItems[choiceWep].cost:
+                    player.weapon = wepItems[choiceWep]
+                    player.gold -= player.weapon.cost
+                    print(f"Good luck with your new {player.weapon.name}, brave warrior!")
+                elif choiceWep >= 0:
+                    print(f"You don't have enough gold for a new {wepItems[choiceWep].name}!")
             self.marketMenu()
         elif choice == 2:
             clear()
@@ -417,15 +425,16 @@ class AdventureGame:
             try:
                 choiceArmor -= 1
             except TypeError:
-                choiceArmor = -1
-            if player.gold >= armorItems[choiceArmor].cost:
-                player.armor = armorItems[choiceArmor]
-                player.gold -= player.armor.cost
-                print(f"Good luck with your new {player.armor.name}, brave warrior!")
-            elif choiceArmor >= 0:
-                print(f"You don't have enough gold for a new {armorItems[choiceArmor].name}!")
-            self.marketMenu()
-        else: #ie leaves
+                choiceArmor = None
+            if choiceArmor:
+                if player.gold >= armorItems[choiceArmor].cost:
+                    player.armor = armorItems[choiceArmor]
+                    player.gold -= player.armor.cost
+                    print(f"Good luck with your new {player.armor.name}, brave warrior!")
+                elif choiceArmor >= 0:
+                    print(f"You don't have enough gold for a new {armorItems[choiceArmor].name}!")
+                self.marketMenu()
+        else: #ie leaves / KeyboardInterrupt
             clear()
             print(f"You leave the markets of {player.location.name}.")
 
@@ -477,7 +486,7 @@ class AdventureGame:
             # PLAYER TURN
             if withinRange:
                 choice = getMenu(f"Attack the {hostile.species} with your {player.weapon.name}!", f"Retreat and consider your options")
-                if(choice == 1):
+                if choice == 1:
                     clear()
                     attacked = True
                     damageDealt = random.choice(player.weapon.damage)
@@ -514,7 +523,7 @@ class AdventureGame:
                                     player.armor = hostile.armor
                         player.update()
                         break
-                elif(choice == 2):
+                elif choice == 2:
                     clear()
                     retreated = True
                     oldDist = distance
@@ -526,17 +535,23 @@ class AdventureGame:
                         print(f"You retreat slightly!")
                     else:
                         print(f"You try to retreat, but the {hostile.species} is faster than you!")
+                else:
+                    hostileHP = -1
+                    break
             else: # Not within range
                 if(player.currentHealth < player.baseHealth):
                     choice = getMenu(f"Close the distance to try to attack the {hostile.species}", f"Wait for the {hostile.species} to approach", "Escape back to safety", f"Quickly patch your wounds (+{min(2, player.baseHealth-player.currentHealth)} HP)")
-                    if(choice == 4):
+                    if choice == 4:
                         clear()
                         healed = True
                         print(f"You chose to patch your wounds for {min(2, player.baseHealth-player.currentHealth)} HP!")
                         player.currentHealth += min(2, player.baseHealth-player.currentHealth)
+                    else:
+                        hostileHP = -1
+                        break
                 else:
                     choice = getMenu(f"Close the distance to try to attack the {hostile.species}", f"Wait for the {hostile.species} to approach", "Escape back to safety")
-                if(choice == 1):
+                if choice == 1:
                     distance = distance - player.currentSpeed
                     if distance < 1:
                         distance = 1
@@ -544,11 +559,11 @@ class AdventureGame:
                     meters = plurify("meter", distance)
                     clear()
                     print(f"You closed the distance!")
-                elif(choice == 2):
+                elif choice == 2:
                     waited = True
                     clear()
                     print(f"You waited for the {hostile.species} to close the distance!")
-                elif(choice == 3):
+                elif choice == 3:
                     if(rng(60) or player.currentSpeed > (hostile.baseSpeed + 20) or distance > player.currentSpeed-(hostile.baseSpeed+20)):
                         escaped = True
                         clear()
@@ -560,6 +575,8 @@ class AdventureGame:
                         distance += random.randint(0-int(hostile.baseSpeed/2), hostile.baseSpeed)
                         clear()
                         print(f"You try to run away, but the {hostile.species} is too fast to escape that easily!")
+                else:
+                    break
             # HOSTILE TURN
             withinRange = hostile.weapon.range >= distance
             if(not withinRange):
@@ -611,10 +628,13 @@ class AdventureGame:
         plpos = self.player.location.position
         locmenu = [f"{location.name} in {location.country}, {math.sqrt((plpos[0] - location.position[0])**2+(plpos[1] - location.position[1])**2):.1f} miles away" for location in self.LOCATIONS if location != self.player.location]
         choice = getMenu(*locmenu)
-        chosen_loc = self.LOCATIONS[choice]
-        clear()
-        print(f"{chosen_loc.name} is a beautiful city! Good luck there, brave warrior!")
-        self.player.location = chosen_loc
+        if choice:
+            chosen_loc = self.LOCATIONS[choice]
+            clear()
+            print(f"{chosen_loc.name} is a beautiful city! Good luck there, brave warrior!")
+            self.player.location = chosen_loc
+        else:
+            print(f"Cancelled travelling!")
 
 class Player:
     def __init__(self):
