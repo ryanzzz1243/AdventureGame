@@ -195,8 +195,7 @@ class AdventureGame:
                     newPlayer.location = self.LOCATIONS[[location.name for location in self.LOCATIONS].index(loc)]
                     newPlayer.armor = self.ARMORS[[armor.name for armor in self.ARMORS].index(armor)]
                     newPlayer.weapon = self.WEAPONS[[weapon.name for weapon in self.WEAPONS].index(wep)]
-                    newPlayer.updateSpeed()
-                    newPlayer.updateLevel()
+                    newPlayer.update()
                     self.PLAYERS.append(newPlayer)
 
     def getNewPlayer(self, ignorePlayerOverwrite: bool = False):
@@ -267,8 +266,7 @@ class AdventureGame:
             return None
         print(f"Your new {self.player.armor.name} will serve you well, provided you don't overdo it.")
         self.player.generator = getDefaultGenerator()
-        self.player.updateLevel()
-        self.player.updateSpeed()
+        self.player.update()
 
     def loadPlayer(self):
         clear()
@@ -284,7 +282,7 @@ class AdventureGame:
 
     def savePlayer(self):
         player = self.player
-        player.updateGenerator()
+        player.update()
         found = False
         with open(FILE_PLAYERS, 'r') as f:
             lines = f.readlines()
@@ -368,9 +366,7 @@ class AdventureGame:
                 print(f"Welcome to the markets of {player.location.name}, {player.name}!")
                 print(f"There are many treasures here; just don't waste all your gold!")
                 self.marketMenu()
-                player.updateGenerator()
-                player.updateLevel()
-                player.updateSpeed()
+                player.update()
                 self.idleMenu()
             elif choice == 3:
                 clear()
@@ -517,7 +513,7 @@ class AdventureGame:
                                 print(f"It dropped its {hostile.armor.name} ({hostile.armor.protection}% prot, {hostile.armor.speedPenalty}% speed penalty)!")
                                 if userYesNo("Would you like to replace your armor with it? (Y/N): "):
                                     player.armor = hostile.armor
-                        player.updateLevel()
+                        player.update()
                         break
                 elif(choice == 2):
                     clear()
@@ -568,7 +564,7 @@ class AdventureGame:
             withinRange = hostile.weapon.range >= distance
             if(withinRange and hostileHP > 0):
                 if(attacked or failedEscape or healed or retreated):
-                    damageDealt = player.updateHealth(random.choice(hostile.weapon.damage), hostile.weapon.damageType)
+                    damageDealt = player.doDamage(random.choice(hostile.weapon.damage), hostile.weapon.damageType)
                     print(f"The {hostile.species} angrily attacks you with their {hostile.weapon.name}!")
                     print(f"They dealt {damageDealt} damage!")
                 elif(escaped):
@@ -649,6 +645,19 @@ class Player:
         except KeyError:
             print("WARNING: Error loading players!")
 
+    def doDamage(self, damage: int, damageType: int):
+        if(damageType == self.armor.protectionType):
+            damage = math.ceil(damage - (self.armor.protection * damage))
+        self.currentHealth -= damage
+        if(self.currentHealth < 0):
+            self.currentHealth = 0
+        return damage
+
+    def update(self):
+        self.updateSpeed()
+        self.updateGenerator()
+        self.updateLevel()
+
     def updateGenerator(self):
         genDict = self.generator
         genDict['name'] = str(self.name)
@@ -669,14 +678,6 @@ class Player:
         '''Refresh speed'''
         speedPenalty = self.armor.speedPenalty
         self.currentSpeed = self.baseSpeed - (speedPenalty * self.baseSpeed)
-
-    def updateHealth(self, damage: int, damageType: int):
-        if(damageType == self.armor.protectionType):
-            damage = math.ceil(damage - (self.armor.protection * damage))
-        self.currentHealth -= damage
-        if(self.currentHealth < 0):
-            self.currentHealth = 0
-        return damage
 
     def updateLevel(self):
         oldLevel = self.level
