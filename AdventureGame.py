@@ -269,7 +269,7 @@ class AdventureGame:
         # Armor choice.
         print("\nFinally, you must choose your armor.")
         starterArmor = [armor for armor in self.ARMORS if armor.starter and armor.player]
-        choice = getMenu(*[f"{armor.name} which slows you down by {armor.speedPenalty*100:.0f}%, but negates {armor.protection*100:.0f}% of incoming damage." for armor in starterArmor])
+        choice = getMenu(*[f"{armor.name} which slows you down by {armor.speedPenalty:.0%}, but negates {armor.protection:.0%} of incoming damage." for armor in starterArmor])
         if choice:
             newPlayer.armor = starterArmor[choice-1]
         else:
@@ -418,6 +418,7 @@ class AdventureGame:
         if choice == 1:
             clear()
             print(f"Balance: {player.gold} gold")
+            print(f"Current weapon: {player.weapon.name} ({min(player.weapon.damage)}-{max(player.weapon.damage)})")
             print(f"What weapon would you like to buy?")
             choiceWep = getMenu(*wepItemsPrompt)
             try:
@@ -435,6 +436,7 @@ class AdventureGame:
         elif choice == 2:
             clear()
             print(f"Balance: {player.gold} gold")
+            print(f"Current armor: {player.armor.name} ({player.armor.protection:.0%} prot, -{player.armor.speedPenalty:.0%} speed)")
             print(f"What armor would you like to buy?")
             choiceArmor = getMenu(*armorItemsPrompt)
             try:
