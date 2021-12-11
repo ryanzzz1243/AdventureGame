@@ -368,6 +368,9 @@ class AdventureGame:
                 print(f"Welcome to the markets of {player.location.name}, {player.name}!")
                 print(f"There are many treasures here; just don't waste all your gold!")
                 self.marketMenu()
+                player.updateGenerator()
+                player.updateLevel()
+                player.updateSpeed()
                 self.idleMenu()
             elif choice == 3:
                 clear()
