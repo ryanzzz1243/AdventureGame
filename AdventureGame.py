@@ -315,6 +315,9 @@ class AdventureGame:
         print(f"Speed: {player.currentSpeed}/{player.baseSpeed} ({(player.currentSpeed/player.baseSpeed)*100:.0f}%)")
 
     def viewScoreboard(self):
+        if len(self.PLAYERS) == 0:
+            print("No players!")
+            return None
         for player in self.PLAYERS:
             print(f"{player.name} the {player.species} is at {player.location.name}. They are level {player.level}.")
 
@@ -370,7 +373,7 @@ class AdventureGame:
                     pass
             elif(choice == 3):
                 clear()
-                #TODO self.travelMenu()
+                self.travelMenu()
                 self.idleMenu()        
 
     def fightMenu(self, fightPlace: str, round: int = 1):
@@ -513,12 +516,22 @@ class AdventureGame:
                 alive = False
                 print(f"You have died!")
                 print(f"Game Over.")
-        if(alive and userYesNo(f"Would you like to continue towards the {fightPlace} of {player.location.name}? (Y/N): ") and alive):
+        if(alive and userYesNo(f"Would you like to continue fighting at {fightPlace} of {player.location.name}? (Y/N): ") and alive):
             self.fightMenu(fightPlace=fightPlace, round=round+1)
         else:
             clear()
             print(f"You've returned to {player.location.name} after a long day of fighting.")
             pass
+
+    def travelMenu(self):
+        print(f"There are many cities available! Where would you like to go?")
+        plpos = self.player.location.position
+        locmenu = [f"{location.name} in {location.country}, {math.sqrt((plpos[0] - location.position[0])**2+(plpos[1] - location.position[1])**2):.1f} miles away" for location in self.LOCATIONS if location != self.player.location]
+        choice = getMenu(*locmenu)
+        chosen_loc = self.LOCATIONS[choice]
+        clear()
+        print(f"{chosen_loc.name} is a beautiful city! Good luck there, brave warrior!")
+        self.player.location = chosen_loc
 
 class Player:
     def __init__(self):

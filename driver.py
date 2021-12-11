@@ -36,7 +36,6 @@ def mainMenu():
     elif(choice == 3):
         clear()
         game.viewScoreboard()
-        print("\n")
         mainMenu()
     elif(choice == 4):
         print("Goodbye.")
