@@ -240,7 +240,7 @@ class AdventureGame:
             clear()
             print("Creation cancelled!")
             return None
-        print(f"I knew someone from {self.player.location.name} once.")
+        print(f"I knew someone from {self.player.location.name} once. What a {random.choice(ADJECTIVES_GOOD)} place!")
 
         # Weapon choice.
         print("\nNow, what weapon would you like to start with?")
@@ -497,7 +497,10 @@ class AdventureGame:
                         player.gold += goldDrop
                         player.exp += expDrop
                         print(f"You killed {hostile.name} the {hostile.species}!")
-                        print(f"{goldDrop} gold flies out of their dead carcass!")
+                        goldPlus = ""
+                        if goldDrop > 0:
+                            goldPlus = f" ({player.gold})"
+                        print(f"{goldDrop} gold flies out of their dead carcass!{goldPlus}")
                         print(f"You won the fight!")
                         itemDrops = []
                         if(hostile.weapon.drop and hostile.weapon.player and hostile.weapon != player.weapon):
@@ -518,11 +521,12 @@ class AdventureGame:
                 elif(choice == 2):
                     clear()
                     retreated = True
+                    oldDist = distance
                     hostileApproach = random.randint(int(hostile.baseSpeed/2), hostile.baseSpeed)
                     distance += player.currentSpeed - hostileApproach
-                    if(distance < 1):
+                    if distance < 1:
                         distance = 1
-                    if(player.currentSpeed > hostileApproach):
+                    if(distance > oldDist):
                         print(f"You retreat slightly!")
                     else:
                         print(f"You try to retreat, but the {hostile.species} is faster than you!")
@@ -561,6 +565,14 @@ class AdventureGame:
                         clear()
                         print(f"You try to run away, but the {hostile.species} is too fast to escape that easily!")
             # HOSTILE TURN
+            if(attacked or approached):
+                distance -= random.randint(int(hostile.baseSpeed*0.75), hostile.baseSpeed)
+            elif(failedEscape or retreated):
+                distance -= random.randint(int(hostile.baseSpeed*0.5), hostile.baseSpeed)
+            elif(healed or waited):
+                distance -= random.randint(hostile.baseSpeed, hostile.baseSpeed*2)
+            if(distance < 1):
+                distance = 1
             withinRange = hostile.weapon.range >= distance
             if(withinRange and hostileHP > 0):
                 if(attacked or failedEscape or healed or retreated):
@@ -571,19 +583,18 @@ class AdventureGame:
                     print(f"The {hostile.species} tries to attack you once more with their {hostile.weapon.name}, but you're already gone!")
                     hostileHP = -1
                 elif(approached):
+                    print(f"The {hostile.species} approaches you as well!")
                     pass
             else:
                 if(attacked or approached):
                     print(f"The {hostile.species} can't reach you with their {hostile.weapon.name}, but they are closing range rapidly!")
-                    distance -= random.randint(int(hostile.baseSpeed*0.75), hostile.baseSpeed)
                 elif(failedEscape or retreated):
                     print(f"Luckily, the {hostile.species} is still too far away to attack you! They are gaining still!")
-                    distance -= random.randint(int(hostile.baseSpeed*0.5), hostile.baseSpeed)
                 elif(healed or waited):
                     print(f"Fortunately, the {hostile.species} is still too far away to attack you! However, they are rapidly gaining!")
-                    distance -= random.randint(hostile.baseSpeed, hostile.baseSpeed*2)
-                if(distance < 1):
-                    distance = 1
+                elif(escaped):
+                    print(f"You escape {hostile.name} easily!")
+                    hostileHP = -1
             if player.currentHealth <= 0:
                 alive = False
                 print(f"You have died!")
