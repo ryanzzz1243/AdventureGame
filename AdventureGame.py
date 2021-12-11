@@ -567,7 +567,7 @@ class AdventureGame:
                         distance += random.randint(0-int(hostile.baseSpeed/2), hostile.baseSpeed)
                         clear()
                         print(f"You try to run away, but the {hostile.species} is too fast to escape that easily!")
-                if choice == 4:
+                elif choice == 4:
                     clear()
                     healed = True
                     print(f"You chose to patch your wounds for {min(2, player.baseHealth-player.currentHealth)} HP!")
