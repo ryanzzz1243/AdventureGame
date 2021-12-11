@@ -17,7 +17,7 @@ def mainMenu():
     choice = AdventureGame.getMenu("Start New Game", "Load Game", "Scoreboard", "Quit")
     if(choice == 1):
         try:
-            game.getNewPlayer(ignorePlayerOverwrite=True)
+            game.getNewPlayer()
         except AttributeError:
             game.player = None
         if(game.player):
