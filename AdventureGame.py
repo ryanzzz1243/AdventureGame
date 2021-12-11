@@ -541,14 +541,6 @@ class AdventureGame:
             else: # Not within range
                 if(player.currentHealth < player.baseHealth):
                     choice = getMenu(f"Close the distance to try to attack the {hostile.species}", f"Wait for the {hostile.species} to approach", "Escape back to safety", f"Quickly patch your wounds (+{min(2, player.baseHealth-player.currentHealth)} HP)")
-                    if choice == 4:
-                        clear()
-                        healed = True
-                        print(f"You chose to patch your wounds for {min(2, player.baseHealth-player.currentHealth)} HP!")
-                        player.currentHealth += min(2, player.baseHealth-player.currentHealth)
-                    else:
-                        hostileHP = -1
-                        break
                 else:
                     choice = getMenu(f"Close the distance to try to attack the {hostile.species}", f"Wait for the {hostile.species} to approach", "Escape back to safety")
                 if choice == 1:
@@ -575,7 +567,13 @@ class AdventureGame:
                         distance += random.randint(0-int(hostile.baseSpeed/2), hostile.baseSpeed)
                         clear()
                         print(f"You try to run away, but the {hostile.species} is too fast to escape that easily!")
+                if choice == 4:
+                    clear()
+                    healed = True
+                    print(f"You chose to patch your wounds for {min(2, player.baseHealth-player.currentHealth)} HP!")
+                    player.currentHealth += min(2, player.baseHealth-player.currentHealth)
                 else:
+                    hostileHP = -1
                     break
             # HOSTILE TURN
             withinRange = hostile.weapon.range >= distance
