@@ -75,6 +75,8 @@ def getUnusedPlayerName(players: list) -> str:
 def getUsedPlayerName(players: list):
         '''Check name and return if valid.'''
         name = getValidUserString("What is your name? : ")
+        if type(name) is none:
+            return None
         for player in players:
             if name == player.name:
                 print(f"{name} found!")
@@ -265,11 +267,14 @@ class AdventureGame:
             print("No players to load.\n")
             return None
         playerName = getUsedPlayerName(self.PLAYERS)
-        for player in self.PLAYERS:
-            if playerName == player.name:
-                self.player = player
-                self.player.new = False
-                break
+        if playerName:
+            for player in self.PLAYERS:
+                if playerName == player.name:
+                    self.player = player
+                    self.player.new = False
+                    break
+        else:
+            self.player = None
 
     def savePlayer(self):
         player = self.player
