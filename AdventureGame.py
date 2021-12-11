@@ -3,7 +3,7 @@ from os.path import exists
 import fileinput
 import random
 import math
-from typing import ClassVar
+from typing import ClassVar, Type
 
 clear = lambda: system('cls')
 
@@ -357,24 +357,82 @@ class AdventureGame:
         else:
             print(f"You have a couple of options on how to proceed: ")
             fightPlace = randomChoice(PLACES_FIGHT)
-            choice = getMenu(f"Go to the {fightPlace} of {player.location.name} to fight", f"Return to {player.location.name} to sleep {randomChoice(PLACES_SLEEPING)}", f"Travel to a distant city")
-            if(choice == 1):
+            choice = getMenu(f"Go to the {fightPlace} of {player.location.name} to fight", f"Go to the markets of {player.location.name} to shop", f"Return to {player.location.name} to sleep {randomChoice(PLACES_SLEEPING)}", f"Travel to a distant city")
+            if choice == 1:
                 clear()
                 player.status = PLAYER_STATUS["fighting"]
                 self.fightMenu(fightPlace=fightPlace, round=1)
                 self.idleMenu()
-            elif(choice == 2):
+            elif choice == 2:
+                clear()
+                print(f"Welcome to the markets of {player.location.name}, {player.name}!")
+                print(f"There are many treasures here; just don't waste all your gold!")
+                self.marketMenu()
+                self.idleMenu()
+            elif choice == 3:
                 clear()
                 player.status = PLAYER_STATUS["sleeping"]
                 print(f"You decide to return to {player.location.name} for the night.")
-                if(userYesNo("Would you like to continue playing? (Y/N): ")):
-                    self.startGame()
-                else:
+                if(userYesNo("Would you like to stop playing? (Y/N): ")):
                     pass
-            elif(choice == 3):
+                else:
+                    self.startGame()
+            elif choice == 4:
                 clear()
                 self.travelMenu()
-                self.idleMenu()        
+                self.idleMenu()    
+
+    def marketMenu(self):
+        player = self.player
+        wepItems = []
+        wepItemsPrompt = []
+        armorItems = []
+        armorItemsPrompt = []
+        for wep in self.WEAPONS:
+            if wep.player and wep.market and wep != player.weapon:
+                wepItemsPrompt.append(f"{wep.cost} gold: {wep.name} ({wep.type}, {min(wep.damage)}-{max(wep.damage)} dmg)")
+                wepItems.append(wep)
+        for armor in self.ARMORS:
+            if armor.player and armor.market and armor != player.armor:
+                armorItemsPrompt.append(f"{armor.cost} gold: {armor.name} ({armor.protection:.0%} prot, -{armor.speedPenalty:.0%} speed)")
+                armorItems.append(armor)
+        print(f"Balance: {player.gold} gold")
+        choice = getMenu("Buy a new weapon", "Buy a new armor", "Leave the market")
+        if choice == 1:
+            clear()
+            print(f"Balance: {player.gold} gold")
+            print(f"What weapon would you like to buy?")
+            choiceWep = getMenu(*wepItemsPrompt)
+            try:
+                choiceWep -= 1
+            except TypeError:
+                choiceWep = -1
+            if player.gold >= wepItems[choiceWep].cost:
+                player.weapon = wepItems[choiceWep]
+                player.gold -= player.weapon.cost
+                print(f"Good luck with your new {player.weapon.name}, brave warrior!")
+            elif choiceWep >= 0:
+                print(f"You don't have enough gold for a new {wepItems[choiceWep].name}!")
+            self.marketMenu()
+        elif choice == 2:
+            clear()
+            print(f"Balance: {player.gold} gold")
+            print(f"What armor would you like to buy?")
+            choiceArmor = getMenu(*armorItemsPrompt)
+            try:
+                choiceArmor -= 1
+            except TypeError:
+                choiceArmor = -1
+            if player.gold >= armorItems[choiceArmor].cost:
+                player.armor = armorItems[choiceArmor]
+                player.gold -= player.armor.cost
+                print(f"Good luck with your new {player.armor.name}, brave warrior!")
+            elif choiceArmor >= 0:
+                print(f"You don't have enough gold for a new {armorItems[choiceArmor].name}!")
+            self.marketMenu()
+        else: #ie leaves
+            clear()
+            print(f"You leave the markets of {player.location.name}.")
 
     def fightMenu(self, fightPlace: str, round: int = 1):
         player = self.player
@@ -383,12 +441,13 @@ class AdventureGame:
         hostileArmor = hostile.armor
         hostileWep = hostile.weapon
         distance = random.randint(1, 60)
+        clear()
         if(round == 1):
             print(f"You decide to go to the {fightPlace} to fight off the hordes that surely exist there.")
-            print(f"In fact, before you could even get to the {fightPlace}, a crazy looking {hostile.name} appeared!")
+            print(f"In fact, before you could even get to the {fightPlace}, a crazy looking {hostile.species} appeared!")
             print(f"Stay away from its {randomChoice(ADJECTIVES_BAD)} {hostileWep.name}!")
         else:
-            print(f"Roaming the {fightPlace}, you come across a hostile {hostile.name}!")
+            print(f"Roaming the {fightPlace}, you come across a hostile {hostile.species}!")
             print(f"With its {randomChoice(ADJECTIVES_BAD)} {hostileWep.name} ready, it approaches you!")
         alive = player.currentHealth > 0
         while(hostileHP > 0 and alive):
@@ -430,7 +489,7 @@ class AdventureGame:
                     if(player.weapon.damageType == hostile.armor.protectionType):
                         damageDealt = damageDealt - math.ceil(hostile.armor.protection * damageDealt)
                     hostileHP -= damageDealt
-                    print(f"You use all your might and unleash your {player.weapon.name} against the {hostile.name}!")
+                    print(f"You use all your might and unleash your {player.weapon.name} against {hostile.name}!")
                     print(f"You dealt {damageDealt} damage!")
                     if(hostileHP <= 0):
                         hostileHP = 0
@@ -441,6 +500,20 @@ class AdventureGame:
                         print(f"You killed {hostile.name} the {hostile.species}!")
                         print(f"{goldDrop} gold flies out of their dead carcass!")
                         print(f"You won the fight!")
+                        itemDrops = []
+                        if(hostile.weapon.drop and hostile.weapon.player and hostile.weapon != player.weapon):
+                            itemDrops.append(hostile.weapon)
+                        if(hostile.armor.drop and hostile.armor.player and hostile.armor != player.armor):
+                            itemDrops.append(hostile.armor)
+                        for item in itemDrops:
+                            if type(item) is Weapon:
+                                print(f"It dropped its {hostile.weapon.name} ({min(hostile.weapon.damage)}-{max(hostile.weapon.damage)})!")
+                                if userYesNo(f"Would you like to replace your weapon with it? (Y/N): "):
+                                    player.weapon = hostile.weapon
+                            elif type(item) is Armor:
+                                print(f"It dropped its {hostile.armor.name} ({hostile.armor.protection}% prot, {hostile.armor.speedPenalty}% speed penalty)!")
+                                if userYesNo("Would you like to replace your armor with it? (Y/N): "):
+                                    player.armor = hostile.armor
                         player.updateLevel()
                         break
                 elif(choice == 2):
@@ -656,6 +729,9 @@ class Armor:
             self.protectionType = DAMAGE_TYPE[genDict['protectionType']]
             self.starter = INTERPRET_BOOL[genDict['starter']]
             self.player = INTERPRET_BOOL[genDict['player']]
+            self.market = INTERPRET_BOOL[genDict['market']]
+            self.cost = int(genDict['cost'])
+            self.drop = INTERPRET_BOOL[genDict['drop']]
         except KeyError:
             print("WARNING: Error loading armors!")
             return None
@@ -673,6 +749,10 @@ class Weapon:
             self.damage = range(bounds[0], bounds[1]+1)
             self.damageType = DAMAGE_TYPE[genDict['damageType']]
             self.starter = INTERPRET_BOOL[genDict['starter']]
+            self.player = INTERPRET_BOOL[genDict['player']]
+            self.market = INTERPRET_BOOL[genDict['market']]
+            self.cost = int(genDict['cost'])
+            self.drop = INTERPRET_BOOL[genDict['drop']]
         except KeyError:
             print("WARNING: Error loading weapons!")
             return None

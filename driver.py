@@ -36,6 +36,7 @@ def mainMenu():
     elif(choice == 3):
         clear()
         game.viewScoreboard()
+        print()
         mainMenu()
     elif(choice == 4):
         print("Goodbye.")
@@ -51,17 +52,17 @@ def loadedMenu():
     elif(choice == 2):
         clear()
         game.viewStats()
-        print("\n")
+        print()
         loadedMenu()
     elif(choice == 3):
         game.savePlayer()
         clear()
-        print("Game saved!\n")
+        print("Game saved!")
         loadedMenu()
     elif(choice == 4):
         game.savePlayer()
         clear()
-        print("Game saved!\n")
+        print("Game saved!")
         mainMenu()
     else:
         loadedMenu()
