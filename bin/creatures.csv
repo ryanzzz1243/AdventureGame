@@ -1,16 +1,24 @@
 name,species,baseHealth,baseSpeed,armor,weapon,friendly
+Mannig Green,Bandit,10,25,Leather,Dual Daggers,no
+Hopforth Shoemaker,Bandit,10,25,None,Dual Daggers,no
+Respess Greycast,Wizard,15,15,Magic Robe,Magic Wand,no
+Anand Fastfoot,Wizard,15,15,Wizard Armor,Magic Wand,no
+Bitcase,Bat,5,25,None,Fangs,no
 Mince,Bat,6,20,None,Fangs,no
 Lanfit,Bat,6,20,None,Fangs,no
 Bralm,Bat,8,15,None,Venom Spit,no
 Pitgrin,Bat,10,10,None,Sonic Screech,no
-Bitcase,Bat,5,25,None,Fangs,no
+Masonfruit,Demon,4,15,None,Demon Club,no
 Toplood,Demon,5,10,None,Demon Club,no
 Redhot,Demon,8,8,None,Demon Club,no
-Masonfruit,Demon,4,15,None,Demon Club,no
 Dreadpuff,Demon,8,10,Demon Robe,Demon Staff,no
 Firthtripe,Demon,12,10,Demon Robe,Demon Club,no
+Drog,Ogre,5,10,None,Small Club,no
 Grog,Ogre,10,5,Thick Skin,Big Club,no
 Bog,Ogre,10,8,None,Big Club,no
 Tog,Ogre,10,5,Thick Skin,Big Rock,no
-Drog,Ogre,5,10,None,Small Club,no
 Nammog,Ogre,18,8,Thick Skin,Big Rock,no
+Feltfog,Ogre,20,10,Ogre Armor,Ogre Sword,no
+Speslic,Basilisk,15,15,None,Snake Venom,no
+Cerlisk,Basilisk,18,15,None,Snake Venom,no
+Thiffs,Basilisk,20,10,Snakeskin,Snake Fangs,no
