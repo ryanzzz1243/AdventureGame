@@ -82,7 +82,7 @@ def getUsedPlayerName(players: list):
         print("Name not found. Specify a name that has been used.")
         return getUsedPlayerName(players)
 
-def getValidUserString(prompt: str):
+def getValidUserString(prompt: str) -> str:
     '''Return user string without invalid characters.'''
     try: 
         name = input(prompt)
@@ -94,10 +94,6 @@ def getValidUserString(prompt: str):
         print(f"Input cannot have \'{CSV_DELIM}\' in it.")
         return getValidUserString(prompt)
     return name
-
-def randomChoice(llist: list):
-    '''Given a list, return a random element'''
-    return llist[random.randint(0, len(llist)-1)]
 
 def userYesNo(prompt: str) -> bool:
     inn = input(prompt)
@@ -202,16 +198,11 @@ class AdventureGame:
         clear()
         print("--- New Player Creation ---")
         self.player = Player()
-        try:
-            if(ignorePlayerOverwrite):
-                self.player.name = getValidUserString("What is your name? : ").strip()
-            else:
-                self.player.name = getUnusedPlayerName(self.PLAYERS).strip()
-            self.player.species = getValidUserString("What species are you? : ").strip()
-        except KeyboardInterrupt:
-            clear()
-            print("Creation cancelled!")
-            return None
+        if(ignorePlayerOverwrite):
+            self.player.name = getValidUserString("What is your name? : ").strip()
+        else:
+            self.player.name = getUnusedPlayerName(self.PLAYERS).strip()
+        self.player.species = getValidUserString("What species are you? : ").strip()
 
         # Starter choice.
         print("Would you rather have... ")
@@ -328,7 +319,7 @@ class AdventureGame:
             print(f"Welcome to {player.location.name}, brave warrior.")
         status = int(player.status)
         if(status == PLAYER_STATUS["sleeping"]):
-            print(f"You were sleeping {randomChoice(PLACES_SLEEPING)}, but you just woke up.")
+            print(f"You were sleeping {random.choice(PLACES_SLEEPING)}, but you just woke up.")
             player.status = PLAYER_STATUS["idle"]
             round += 1
             self.idleMenu()
@@ -354,8 +345,8 @@ class AdventureGame:
             print(f"{player.name} has passed away! Cannot play with this character.")
         else:
             print(f"You have a couple of options on how to proceed: ")
-            fightPlace = randomChoice(PLACES_FIGHT)
-            choice = getMenu(f"Go to the {fightPlace} of {player.location.name} to fight", f"Go to the markets of {player.location.name} to shop", f"Return to {player.location.name} to sleep {randomChoice(PLACES_SLEEPING)}", f"Travel to a distant city")
+            fightPlace = random.choice(PLACES_FIGHT)
+            choice = getMenu(f"Go to the {fightPlace} of {player.location.name} to fight", f"Go to the markets of {player.location.name} to shop", f"Return to {player.location.name} to sleep {random.choice(PLACES_SLEEPING)}", f"Travel to a distant city")
             if choice == 1:
                 clear()
                 player.status = PLAYER_STATUS["fighting"]
@@ -435,7 +426,7 @@ class AdventureGame:
 
     def fightMenu(self, fightPlace: str, round: int = 1):
         player = self.player
-        hostile = randomChoice([creature for creature in self.CREATURES if not creature.friendly])
+        hostile = random.choice([creature for creature in self.CREATURES if not creature.friendly and creature.baseHealth <= player.baseHealth])
         hostileHP = hostile.baseHealth
         hostileArmor = hostile.armor
         hostileWep = hostile.weapon
@@ -444,10 +435,10 @@ class AdventureGame:
         if(round == 1):
             print(f"You decide to go to the {fightPlace} to fight off the hordes that surely exist there.")
             print(f"In fact, before you could even get to the {fightPlace}, a crazy looking {hostile.species} appeared!")
-            print(f"Stay away from its {randomChoice(ADJECTIVES_BAD)} {hostileWep.name}!")
+            print(f"Stay away from its {random.choice(ADJECTIVES_BAD)} {hostileWep.name}!")
         else:
             print(f"Roaming the {fightPlace}, you come across a hostile {hostile.species}!")
-            print(f"With its {randomChoice(ADJECTIVES_BAD)} {hostileWep.name} ready, it approaches you!")
+            print(f"With its {random.choice(ADJECTIVES_BAD)} {hostileWep.name} ready, it approaches you!")
         alive = player.currentHealth > 0
         while(hostileHP > 0 and alive):
             distance = int(distance)
@@ -570,11 +561,12 @@ class AdventureGame:
                 if(attacked or approached):
                     distance -= random.randint(int(hostile.baseSpeed*0.75), hostile.baseSpeed)
                 elif(failedEscape or retreated):
-                    distance -= random.randint(int(hostile.baseSpeed*0.5), hostile.baseSpeed)
+                    distance -= random.randint(int(hostile.baseSpeed*0.75), hostile.baseSpeed)
                 elif(healed or waited):
                     distance -= random.randint(hostile.baseSpeed, hostile.baseSpeed*2)
                 if(distance < 1):
                     distance = 1
+                distance = int(distance)
                 print(f"The {hostile.species} closes the distance to {distance} meters")
             withinRange = hostile.weapon.range >= distance
             if(withinRange and hostileHP > 0):
@@ -691,7 +683,7 @@ class Player:
     def updateSpeed(self):
         '''Refresh speed'''
         speedPenalty = self.armor.speedPenalty
-        self.currentSpeed = self.baseSpeed - (speedPenalty * self.baseSpeed)
+        self.currentSpeed = math.ceil(self.baseSpeed - (speedPenalty * self.baseSpeed))
 
     def updateLevel(self):
         oldLevel = self.level

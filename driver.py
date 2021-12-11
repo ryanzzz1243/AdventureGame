@@ -16,8 +16,11 @@ def mainMenu():
     print("--- Main Menu ---")
     choice = AdventureGame.getMenu("Start New Game", "Load Game", "Scoreboard", "Quit")
     if(choice == 1):
-        game.getNewPlayer(ignorePlayerOverwrite=True)
-        if(game.player.armor):
+        try:
+            game.getNewPlayer(ignorePlayerOverwrite=True)
+        except AttributeError:
+            game.player = None
+        if(game.player):
             print("Game created successfully!")
             time.sleep(2)
             clear()
