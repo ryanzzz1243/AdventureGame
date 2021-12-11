@@ -565,14 +565,17 @@ class AdventureGame:
                         clear()
                         print(f"You try to run away, but the {hostile.species} is too fast to escape that easily!")
             # HOSTILE TURN
-            if(attacked or approached):
-                distance -= random.randint(int(hostile.baseSpeed*0.75), hostile.baseSpeed)
-            elif(failedEscape or retreated):
-                distance -= random.randint(int(hostile.baseSpeed*0.5), hostile.baseSpeed)
-            elif(healed or waited):
-                distance -= random.randint(hostile.baseSpeed, hostile.baseSpeed*2)
-            if(distance < 1):
-                distance = 1
+            withinRange = hostile.weapon.range >= distance
+            if(not withinRange):
+                if(attacked or approached):
+                    distance -= random.randint(int(hostile.baseSpeed*0.75), hostile.baseSpeed)
+                elif(failedEscape or retreated):
+                    distance -= random.randint(int(hostile.baseSpeed*0.5), hostile.baseSpeed)
+                elif(healed or waited):
+                    distance -= random.randint(hostile.baseSpeed, hostile.baseSpeed*2)
+                if(distance < 1):
+                    distance = 1
+                print(f"The {hostile.species} closes the distance to {distance} meters")
             withinRange = hostile.weapon.range >= distance
             if(withinRange and hostileHP > 0):
                 if(attacked or failedEscape or healed or retreated):
