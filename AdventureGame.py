@@ -3,6 +3,7 @@ from os.path import exists
 import fileinput
 import random
 import math
+from typing import ClassVar
 
 clear = lambda: system('cls')
 
@@ -64,12 +65,7 @@ def getMenu(*args: str):
 
 def getUnusedPlayerName(players: list) -> str:
         '''Check name and return if valid.'''
-        try:
-            name = input("What is your name? : ")
-        except KeyboardInterrupt:
-            clear()
-            print("Menu cancelled!")
-            return None
+        name = getValidUserString("What is your name? : ")
         for player in players:
             if name == player.name:
                 print(f"{name} is already in use! Specify a unique name.")
@@ -78,18 +74,26 @@ def getUnusedPlayerName(players: list) -> str:
 
 def getUsedPlayerName(players: list):
         '''Check name and return if valid.'''
-        try:
-            name = input("What is your name? : ")
-        except KeyboardInterrupt:
-            clear()
-            print("Menu cancelled!")
-            return None
+        name = getValidUserString("What is your name? : ")
         for player in players:
             if name == player.name:
                 print(f"{name} found!")
                 return name
         print("Name not found. Specify a name that has been used.")
         return getUsedPlayerName(players)
+
+def getValidUserString(prompt: str):
+    '''Return user string without invalid characters.'''
+    try: 
+        name = input(prompt)
+    except KeyboardInterrupt:
+        clear()
+        print("Menu cancelled!")
+        return None
+    if CSV_DELIM in name:
+        print(f"Input cannot have \'{CSV_DELIM}\' in it.")
+        return getValidUserString(prompt)
+    return name
 
 def randomChoice(llist: list):
     '''Given a list, return a random element'''
@@ -201,10 +205,10 @@ class AdventureGame:
         self.player = Player()
         try:
             if(ignorePlayerOverwrite):
-                self.player.name = input("What is your name? : ").strip()
+                self.player.name = getValidUserString("What is your name? : ").strip()
             else:
                 self.player.name = getUnusedPlayerName(self.PLAYERS).strip()
-            self.player.species = input("What species are you? : ").strip()
+            self.player.species = getValidUserString("What species are you? : ").strip()
         except KeyboardInterrupt:
             clear()
             print("Creation cancelled!")
