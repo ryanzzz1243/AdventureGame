@@ -10,6 +10,7 @@ In towns, the player can freely heal and trade for better loot.
 Players, locations, weapons, armors, and creatures are specified in their files and loaded on game startup.
 
 When you are in any menu (lists 1, 2, 3, etc), pressing Ctrl-C (KeyboardInterrupt) will exit that menu, instead of the whole game.
+Protip: You can heal in the market.
 
 Running the code in IDLE works, but I developed this entirely in VS Code which uses Powershell.
 To start it in Powershell and see the fancy text clearing, hold shift and right click the folder (rje7hp_final) -> Open in Powershell, then run driver.py with Python3 
