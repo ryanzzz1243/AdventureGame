@@ -15,7 +15,7 @@ def userYesNo(prompt: str) -> bool:
 def mainMenu():
     print("--- Main Menu ---")
     choice = AdventureGame.getMenu("Start New Game", "Load Game", "Scoreboard", "Quit")
-    if(choice == 1):
+    if choice == 1:
         try:
             game.getNewPlayer()
         except(AttributeError):
@@ -30,39 +30,39 @@ def mainMenu():
             print("Error creating game! Going back to main menu...")
             game.player = None
             mainMenu()
-    elif(choice == 2):
+    elif choice == 2:
         game.loadPlayer()
         if(game.player):
             loadedMenu()
         else:
             mainMenu()
-    elif(choice == 3):
+    elif choice == 3:
         clear()
         game.viewScoreboard()
         print()
         mainMenu()
-    elif(choice == 4):
+    elif choice == 4:
         print("Goodbye.")
     else:
         print("Goodbye.")
 
 def loadedMenu():
     choice = AdventureGame.getMenu("Play Game", "View Stats", "Save", "Save & Quit to Main Menu")
-    if(choice == 1):
+    if choice == 1:
         clear()
         game.startGame()
         loadedMenu()
-    elif(choice == 2):
+    elif choice == 2:
         clear()
         game.viewStats()
         print()
         loadedMenu()
-    elif(choice == 3):
+    elif choice == 3:
         game.savePlayer()
         clear()
         print("Game saved!")
         loadedMenu()
-    elif(choice == 4):
+    elif choice == 4:
         game.savePlayer()
         clear()
         print("Game saved!")

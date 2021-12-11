@@ -242,7 +242,7 @@ class AdventureGame:
             return None
         print("An excellent choice.")
 
-        # Location choice.       
+        # Location choice.     
         print("\nWhere would you like to start out?")
         starterLocs = [loc for loc in self.LOCATIONS if loc.starter]
         choice = getMenu(*[f"{loc.name} in the country of {loc.country}" for loc in starterLocs])
@@ -266,7 +266,7 @@ class AdventureGame:
             return None
         print(f"The {newPlayer.weapon.name} is a powerful tool in the hands of a competent warrior.")
 
-        # Armor choice
+        # Armor choice.
         print("\nFinally, you must choose your armor.")
         starterArmor = [armor for armor in self.ARMORS if armor.starter and armor.player]
         choice = getMenu(*[f"{armor.name} which slows you down by {armor.speedPenalty*100:.0f}%, but negates {armor.protection*100:.0f}% of incoming damage." for armor in starterArmor])
@@ -324,9 +324,9 @@ class AdventureGame:
             print(f"{player.name} the {player.species} is at {player.location.name}")
             print(f"They are level {player.level} and have {player.gold} gold pieces")
         print(f"Weapon: {player.weapon.name}, {min(player.weapon.damage)} to {max(player.weapon.damage)} damage")
-        print(f"Armor: {player.armor.name}, slows {player.armor.speedPenalty*100:.0f}% and negates {player.armor.protection*100}% of {DAMAGE_TYPE_INV[player.armor.protectionType]} damage")  
-        print(f"Health: {player.currentHealth}/{player.baseHealth} ({(player.currentHealth/player.baseHealth)*100:.0f}%)")
-        print(f"Speed: {player.currentSpeed}/{player.baseSpeed} ({(player.currentSpeed/player.baseSpeed)*100:.0f}%)")
+        print(f"Armor: {player.armor.name}, slows {player.armor.speedPenalty:.0%} and negates {player.armor.protection:.0%} of {DAMAGE_TYPE_INV[player.armor.protectionType]} damage")  
+        print(f"Health: {player.currentHealth}/{player.baseHealth} ({player.currentHealth/player.baseHealth:.0%})")
+        print(f"Speed: {player.currentSpeed}/{player.baseSpeed} ({player.currentSpeed/player.baseSpeed:.0%})")
 
     def viewScoreboard(self):
         if len(self.PLAYERS) == 0:
@@ -529,7 +529,7 @@ class AdventureGame:
                     hostileHP -= damageDealt
                     print(f"You use all your might and unleash your {player.weapon.name} against {hostile.name}!")
                     print(f"You dealt {damageDealt} damage!")
-                    if(hostileHP <= 0): ### WON FIGHT
+                    if hostileHP <= 0: ### WON FIGHT
                         hostileHP = 0
                         goldDrop = random.randint(int(hostile.baseHealth/4), hostile.baseHealth)
                         expDrop = random.randint(int(hostile.baseHealth/2), hostile.baseHealth)
