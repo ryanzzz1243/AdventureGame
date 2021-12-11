@@ -7,11 +7,11 @@ from typing import ClassVar, Type
 
 clear = lambda: system('cls')
 
-ADJECTIVES_BAD = ("evil", "disgusting", "dirty", "horrible", "awful", "terrible")
-ADJECTIVES_GOOD = ("wonderful", "wondrous", "amazing", "awesome", "great", "fantastic")
+ADJECTIVES_BAD = ("evil", "disgusting", "dirty", "horrible", "awful", "terrible", "menacing", "dastardly", "wicked", "vile", "foul", "vulgar", "rotten", "sick", "vicious", "wretched", "horrid", "nasty", "appalling", "hellish")
+ADJECTIVES_GOOD = ("wonderful", "wondrous", "amazing", "awesome", "great", "fantastic", "regal", "marvelous", "lovely", "magnificent", "glorious", "delightful")
 
 PLACES_SLEEPING = ("in a tavern", "in a hostel", "on the street", "in an alleyway", "in a ditch", "in a garbage bin", "on a nice bed", "on a rooftop overlooking the town", "in a cozy place", "in an awfully smelly corner")
-PLACES_FIGHT = ("forests", "outlying trade routes", "caves", "labyrinth", "abandoned mineshafts", "woodlands", "rolling hills", "mountains", "firey caves")
+PLACES_FIGHT = ("forests", "outlying trade routes", "caves", "labyrinth", "abandoned mineshafts", "woodlands", "rolling hills", "mountains", "firey caves", "highlands")
 
 DAMAGE_TYPE = {"none": -1, "physical": 0, "magic": 1, "true": 2}
 DAMAGE_TYPE_INV = {value: key for key, value in DAMAGE_TYPE.items()}
@@ -532,8 +532,8 @@ class AdventureGame:
                     if(choice == 4):
                         clear()
                         healed = True
-                        print("You chose to patch your wounds for 2 HP!")
-                        player.currentHealth += 2
+                        print(f"You chose to patch your wounds for {min(2, player.baseHealth-player.currentHealth)} HP!")
+                        player.currentHealth += min(2, player.baseHealth-player.currentHealth)
                 else:
                     choice = getMenu(f"Close the distance to try to attack the {hostile.species}", f"Wait for the {hostile.species} to approach", "Escape back to safety")
                 if(choice == 1):
