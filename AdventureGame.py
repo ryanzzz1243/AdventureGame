@@ -75,7 +75,7 @@ def getUnusedPlayerName(players: list) -> str:
 def getUsedPlayerName(players: list):
         '''Check name and return if valid.'''
         name = getValidUserString("What is your name? : ")
-        if type(name) is none:
+        if type(name) is None:
             return None
         for player in players:
             if name == player.name:
