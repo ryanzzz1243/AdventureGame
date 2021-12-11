@@ -31,7 +31,7 @@ FILE_DEFAULT_PLAYERS = "bin/players_default.csv"
 
 def getDefaultGenerator() -> dict:
     with open(FILE_DEFAULT_PLAYERS, 'r') as f:
-        aspects = f.readline().strip("\n").split(CSV_DELIM)
+        aspects = f.readline().strip(",\n").split(CSV_DELIM)
     return {key: None for key in aspects}
 
 # getMenu is reused from my previous submissions
@@ -427,7 +427,7 @@ class AdventureGame:
             if choiceWep:
                 if player.gold >= wepItems[choiceWep].cost:
                     player.weapon = wepItems[choiceWep]
-                    player.gold -= player.weapon.cost
+                    player.gold -= wepItems[choiceWep].cost
                     print(f"Good luck with your new {player.weapon.name}, brave warrior!")
                 elif choiceWep >= 0:
                     print(f"You don't have enough gold for a new {wepItems[choiceWep].name}!")
@@ -444,7 +444,7 @@ class AdventureGame:
             if choiceArmor:
                 if player.gold >= armorItems[choiceArmor].cost:
                     player.armor = armorItems[choiceArmor]
-                    player.gold -= player.armor.cost
+                    player.gold -= wepItems[choiceArmor].cost
                     print(f"Good luck with your new {player.armor.name}, brave warrior!")
                 elif choiceArmor >= 0:
                     print(f"You don't have enough gold for a new {armorItems[choiceArmor].name}!")
