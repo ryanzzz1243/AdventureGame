@@ -101,6 +101,21 @@ def getValidUserString(prompt: str) -> str:
         return getValidUserString(prompt)
     return name
 
+def getValidUserInt(prompt: str, lowerBound: int, upperBound: int) -> int:
+    '''Return user int in [lowerBound, upperBound].'''
+    try:
+        out = input(prompt)
+    except KeyboardInterrupt:
+        clear()
+        print("Menu cancelled!")
+        return None
+    try:
+        out = int(out)
+        return out
+    except (ValueError, TypeError):
+        print(f"Value must be an int in [{lowerBound}, {upperBound}]!")
+        return getValidUserInt(prompt, lowerBound, upperBound)
+
 def userYesNo(prompt: str) -> bool:
     inn = input(prompt)
     return inn.upper() == 'Y'
@@ -399,7 +414,7 @@ class AdventureGame:
                 armorItemsPrompt.append(f"{armor.cost} gold: {armor.name} ({armor.protection:.0%} prot, -{armor.speedPenalty:.0%} speed)")
                 armorItems.append(armor)
         print(f"Balance: {player.gold} gold")
-        choice = getMenu("Buy a new weapon", "Buy a new armor", "Leave the market")
+        choice = getMenu("Buy a new weapon", "Buy a new armor", "Buy a healing potion", "Leave the market")
         if choice == 1:
             clear()
             print(f"Balance: {player.gold} gold")
@@ -434,6 +449,25 @@ class AdventureGame:
                 elif choiceArmor >= 0:
                     print(f"You don't have enough gold for a new {armorItems[choiceArmor].name}!")
                 self.marketMenu()
+        elif choice == 3:
+            clear()
+            if(player.currentHealth < player.baseHealth):
+                print(f"Balance: {player.gold} gold")
+                print(f"Health: {player.currentHealth}/{player.baseHealth} ({player.currentHealth/player.baseHealth:.0%})\n")
+                print(f"We will heal 1 health per 1 gold!")
+                healAmt = getValidUserInt(f"How much would you like to heal? (1-{player.baseHealth-player.currentHealth} HP): ", 1, player.baseHealth-player.currentHealth)
+                if healAmt:
+                    player.currentHealth += healAmt
+                    player.gold -= healAmt
+                    clear()
+                    print(f"You healed for {healAmt} HP!")
+                else:
+                    clear()
+                    print(f"Healing cancelled!")
+            else:
+                clear()
+                print(f"You are already at full health! ({player.currentHealth}/{player.baseHealth})")
+            self.marketMenu()
         else: #ie leaves / KeyboardInterrupt
             clear()
             print(f"You leave the markets of {player.location.name}.")
@@ -495,22 +529,22 @@ class AdventureGame:
                     hostileHP -= damageDealt
                     print(f"You use all your might and unleash your {player.weapon.name} against {hostile.name}!")
                     print(f"You dealt {damageDealt} damage!")
-                    if(hostileHP <= 0):
+                    if(hostileHP <= 0): ### WON FIGHT
                         hostileHP = 0
                         goldDrop = random.randint(int(hostile.baseHealth/4), hostile.baseHealth)
                         expDrop = random.randint(int(hostile.baseHealth/2), hostile.baseHealth)
                         player.gold += goldDrop
                         player.exp += expDrop
                         print(f"You killed {hostile.name} the {hostile.species}!")
-                        goldPlus = ""
+                        goldPlusMsg = ""
                         if goldDrop > 0:
-                            goldPlus = f" ({player.gold})"
-                        print(f"{goldDrop} gold flies out of their dead carcass!{goldPlus}")
+                            goldPlusMsg = f" ({player.gold})"
+                        print(f"{goldDrop} gold flies out of their dead carcass!{goldPlusMsg}")
                         print(f"You won the fight!")
                         itemDrops = []
-                        if(hostile.weapon.drop and hostile.weapon.player and hostile.weapon != player.weapon):
+                        if(hostile.weapon.drop and hostile.weapon.player and hostile.weapon != player.weapon and rng(hostile.weapon.dropChance)):
                             itemDrops.append(hostile.weapon)
-                        if(hostile.armor.drop and hostile.armor.player and hostile.armor != player.armor):
+                        if(hostile.armor.drop and hostile.armor.player and hostile.armor != player.armor and rng(hostile.armor.dropChance)):
                             itemDrops.append(hostile.armor)
                         for item in itemDrops:
                             if type(item) is Weapon:
@@ -765,6 +799,7 @@ class Armor:
             self.market = INTERPRET_BOOL[genDict['market']]
             self.cost = int(genDict['cost'])
             self.drop = INTERPRET_BOOL[genDict['drop']]
+            self.dropChance = int(genDict['dropChance'])
         except KeyError:
             print("WARNING: Error loading armors!")
             return None
@@ -786,6 +821,7 @@ class Weapon:
             self.market = INTERPRET_BOOL[genDict['market']]
             self.cost = int(genDict['cost'])
             self.drop = INTERPRET_BOOL[genDict['drop']]
+            self.dropChance = int(genDict['dropChance'])
         except KeyError:
             print("WARNING: Error loading weapons!")
             return None
