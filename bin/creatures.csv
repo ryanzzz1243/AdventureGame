@@ -1,4 +1,13 @@
 name,species,baseHealth,baseSpeed,armor,weapon,friendly
-Evil Bat,bat,6,15,None,Fangs,no
-Ogre,ogre,10,5,Thick Skin,Big Club,no
-Demon,demon,5,10,None,Demon Club,no
+Mince,Bat,6,20,None,Fangs,no
+Lanfit,Bat,6,20,None,Fangs,no
+Bralm,Bat,8,15,None,Venom Spit,no
+Pitgrin,Bat,10,10,None,Sonic Screech,no
+Toplood,Demon,5,10,None,Demon Club,no
+Redhot,Demon,8,8,None,Demon Club,no
+Masonfruit,Demon,4,15,None,Demon Club,no
+Dreadpuff,Demon,8,10,Demon Robe,Demon Staff,no
+Grog,Ogre,10,5,Thick Skin,Big Club,no
+Bog,Ogre,10,8,None,Big Club,no
+Tog,Ogre,10,5,Thick Skin,Big Rock,no
+Drog,Ogre,5,10,None,Small Club,no
